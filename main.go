@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+
+	aux "github.com/GoEavesDrop/Aux"
 )
 
 func main() {
-	fmt.Println("I LIVE!")
+	//find all devices
+	var NetInfo = aux.GetNetworkDeviceInfo()
+	fmt.Print(NetInfo)
 }
