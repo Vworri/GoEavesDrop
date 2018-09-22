@@ -1,35 +1,58 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	aux "github.com/GoEavesDrop/Aux"
-	ui "github.com/gizak/termui" // <- ui shortcut, optional
+	"github.com/jroimartin/gocui"
 )
 
-func main() {
-	//find all devices
-	var NetInfo = aux.GetNetworkDeviceInfo()
-	if err := ui.Init(); err != nil {
-		panic(err)
-	}
-	defer ui.Close()
-	var menu []string
-	for i, netInt := range NetInfo {
-		menu = append(menu, fmt.Sprintf("[%d] %s\n", i, netInt.Name))
-	}
-	ls := ui.NewList()
-	ls.Items = menu
-	ls.ItemFgColor = ui.ColorYellow
-	ls.BorderLabel = "List"
-	ls.Height = 7
-	ls.Width = 25
-	ls.Y = 0
+var vbuf, buf string
 
-	ui.Render(ls)
-	ui.Handle("q", func(ui.Event) {
-		// press q to quit
-		ui.StopLoop()
-	})
-	ui.Loop()
+func quit(g *gocui.Gui, v *gocui.View) error {
+	vbuf = v.ViewBuffer()
+	buf = v.Buffer()
+	return gocui.ErrQuit
+}
+
+func overwrite(g *gocui.Gui, v *gocui.View) error {
+	v.Overwrite = !v.Overwrite
+	return nil
+}
+
+func layout(g *gocui.Gui) error {
+	_, maxY := g.Size()
+	if v, err := g.SetView("main", 0, 0, 20, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Editable = true
+		v.Wrap = true
+		if _, err := g.SetCurrentView("main"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func main() {
+	g, err := gocui.NewGui(gocui.OutputNormal)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	g.Cursor = true
+	g.Mouse = true
+
+	g.SetManagerFunc(layout)
+
+	if err := g.SetKeybinding("main", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		log.Panicln(err)
+	}
+	if err := g.SetKeybinding("main", gocui.KeyCtrlI, gocui.ModNone, overwrite); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		log.Panicln(err)
+	}
 }
