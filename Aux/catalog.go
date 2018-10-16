@@ -1,10 +1,12 @@
 package aux
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"time"
 
+	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 )
 
@@ -15,6 +17,7 @@ type Dev struct {
 	TimeRegistered   time.Time
 	TimeDeregistered time.Time
 	PacketCount      int
+	Handle           *pcap.Handle
 }
 type Address struct {
 	IP     net.IP
@@ -42,4 +45,21 @@ func GetNetworkDeviceInfo() []Dev {
 	}
 
 	return devInfo
+}
+
+func (device Dev) Sniff(promiscuous bool) {
+	var err error
+	if device.Handle, err = pcap.OpenLive(device.Name, 3200, promiscuous, pcap.BlockForever); err != nil {
+		panic(err)
+	} else {
+		packetSource := gopacket.NewPacketSource(device.Handle, device.Handle.LinkType())
+		for packet := range packetSource.Packets() {
+			device.PacketCount += 1
+			fmt.Println(packet) // Do something with a packet here.
+		}
+	}
+}
+
+func (device Dev) Kill() {
+	device.Handle.Close()
 }
