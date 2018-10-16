@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	aux "github.com/GoEavesDrop/Aux"
+	aux "github.com/GoEavesDrop/device"
 )
 
 func main() {
