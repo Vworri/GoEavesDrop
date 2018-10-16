@@ -1,4 +1,4 @@
-package aux
+package device
 
 import (
 	"fmt"
