@@ -11,8 +11,5 @@ func main() {
 	var NetInfo = device.GetNetworkDeviceInfo()
 	for _, interf := range NetInfo {
 		fmt.Println(interf.Name)
-		if interf.Name == "wlo1" {
-			interf.Sniff(true)
-		}
 	}
 }

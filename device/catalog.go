@@ -1,46 +1,48 @@
 package device
 
 import (
-	"fmt"
 	"log"
 	"net"
+	"os/exec"
+	"regexp"
 	"time"
-
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/pcap"
 )
 
 type Dev struct {
+	Common_Name      string
 	Name             string
 	Description      string
 	Addresses        []Address
 	TimeRegistered   time.Time
 	TimeDeregistered time.Time
 	PacketCount      int
-	Handle           *pcap.Handle
 }
 type Address struct {
 	IP     net.IP
 	Subnet net.IPMask
 }
 
+type SniffProcess struct {
+	PID        int
+	Start_Time time.Time
+	End_Time   time.Time
+	FilePath   string
+	Duration   int
+}
+
 func GetNetworkDeviceInfo() []Dev {
 	var devInfo []Dev
-	devs, err := pcap.FindAllDevs()
+	var device_format = regexp.MustCompile(`(\d+.\s)`)
+	var interface_patt = regexp.MustCompile(`(?:\w+)`)
+	out, err := exec.Command("tshark", "-D").Output()
+	sniffable_devices := device_format.Split(string(out), -1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, device := range devs {
+	for _, device := range sniffable_devices {
 		var dev Dev
-		dev.Name = device.Name
-		dev.Description = device.Description
-		dev.TimeDeregistered = time.Now()
-		for _, address := range device.Addresses {
-			var addr Address
-			addr.IP = address.IP
-			addr.Subnet = address.Netmask
-			dev.Addresses = append(dev.Addresses, addr)
-		}
+		dev.Common_Name = device
+		dev.Name = string(interface_patt.Find([]byte(device)))
 		devInfo = append(devInfo, dev)
 	}
 
@@ -48,18 +50,5 @@ func GetNetworkDeviceInfo() []Dev {
 }
 
 func (device Dev) Sniff(promiscuous bool) {
-	var err error
-	if device.Handle, err = pcap.OpenLive(device.Name, 3200, promiscuous, pcap.BlockForever); err != nil {
-		panic(err)
-	} else {
-		packetSource := gopacket.NewPacketSource(device.Handle, device.Handle.LinkType())
-		for packet := range packetSource.Packets() {
-			device.PacketCount += 1
-			fmt.Println(packet) // Do something with a packet here.
-		}
-	}
-}
 
-func (device Dev) Kill() {
-	device.Handle.Close()
 }
