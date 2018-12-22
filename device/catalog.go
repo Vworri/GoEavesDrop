@@ -1,6 +1,8 @@
 package device
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net"
 	"os/exec"
@@ -16,6 +18,7 @@ type Dev struct {
 	TimeRegistered   time.Time
 	TimeDeregistered time.Time
 	PacketCount      int
+	DeviceSniffs     []SniffProcess
 }
 type Address struct {
 	IP     net.IP
@@ -23,11 +26,12 @@ type Address struct {
 }
 
 type SniffProcess struct {
-	PID        int
-	Start_Time time.Time
-	End_Time   time.Time
-	FilePath   string
-	Duration   int
+	PID         int
+	Start_Time  time.Time
+	End_Time    time.Time
+	FilePath    string
+	Duration    int
+	ContentType []string
 }
 
 func GetNetworkDeviceInfo() []Dev {
@@ -49,6 +53,34 @@ func GetNetworkDeviceInfo() []Dev {
 	return devInfo
 }
 
-func (device Dev) Sniff(promiscuous bool) {
+func (device Dev) Sniff() {
+	sniff_command := exec.Command("sudo", "tshark", "-iwlo1", "-aduration:100")
 
+	// Deal with output stream
+	stdout, err := sniff_command.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stderr, err := sniff_command.StderrPipe()
+	if err != nil {
+		log.Fatal()
+	}
+
+	sniff_command.Start()
+	go handle_stream(stderr)
+	go handle_stream(stdout)
+	fmt.Scanln()
+}
+
+func handle_stream(std io.ReadCloser) {
+	b := make([]byte, 1)
+	for {
+		n, err := std.Read(b)
+		fmt.Printf("%s", b[:n])
+
+		if err == io.EOF {
+			break
+		}
+	}
 }
