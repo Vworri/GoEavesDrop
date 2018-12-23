@@ -1,37 +1,38 @@
-## Welcome to GitHub Pages
+# eavesdrop
 
-You can use the [editor on GitHub](https://github.com/Vworri/GoEavesDrop/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+ ## Synopsis
+A sniffing app to pull redundant copies of submission forms or 
+other Ethernet traffic. Part of Unhackable Server Project. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Code Information
 
-### Markdown
+Govesdrop, sniffs the network, extracts text and other useful information.
+    Using tshark, it initiates a packet capture that pipes the stdout into the Go process.
+    The capture pipes the ENTIRE packet and only saves it if the user wants to. 
+    
+##User Interface
+   The user interface, at this point only allows the user (let's call him Dave) to chose with device he want't to sniff on.
+   I mean to add some nore functionality:
+ 
+  -[ ] Dave can choose which device to sniff on
+  
+  -[ ] Dave can choose what type of payload he wants to consider.
+  
+  -[ ] Dave can go in and see how much data leakage is happening. How many packets have plain text in them and a list of  sources.
+       
+  -[ ] Dave can see how many total packets are passing through
+  
+  -[ ] Dave can choose where the payload is being stored on his system
+  
+  -[ ] Dave can kill the sniff
+  
+  -[ ] Dave can schedule a sniff 
+  
+  -[ ] Dave can count/ see a graph of malformed packets to see if Hal is misbehaving
+  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Packaging Eavesdrop:
+Using Go has made packaging a lot easier. All I will have to do is compile it. `go build main.go`
+## Running the application
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Vworri/GoEavesDrop/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+The system must have tshark on it but that's it and you must have sudo privilages.
