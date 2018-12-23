@@ -18,7 +18,7 @@ Govesdrop, sniffs the network, extracts text and other useful information.
   
   - [ ] Dave can choose what type of payload he wants to consider.
   
-  -[ ] Dave can go in and see how much data leakage is happening. How many packets have plain text in them and a list of  sources.
+  - [ ] Dave can go in and see how much data leakage is happening. How many packets have plain text in them and a list of  sources.
        
   - [ ] Dave can see how many total packets are passing through
   
