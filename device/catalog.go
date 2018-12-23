@@ -11,6 +11,7 @@ import (
 )
 
 type Dev struct {
+	DeviceID         int
 	Common_Name      string
 	Name             string
 	Description      string
@@ -26,12 +27,15 @@ type Address struct {
 }
 
 type SniffProcess struct {
-	PID         int
-	Start_Time  time.Time
-	End_Time    time.Time
-	FilePath    string
-	Duration    int
-	ContentType []string
+	PID           int
+	Start_Time    time.Time
+	End_Time      time.Time
+	FilePath      string
+	Duration      int
+	ContentType   []string
+	IsPromiscuous bool
+	Save          bool
+	SaveLocation  string
 }
 
 func GetNetworkDeviceInfo() []Dev {
@@ -39,22 +43,47 @@ func GetNetworkDeviceInfo() []Dev {
 	var device_format = regexp.MustCompile(`(\d+.\s)`)
 	var interface_patt = regexp.MustCompile(`(?:\w+)`)
 	out, err := exec.Command("tshark", "-D").Output()
+
 	sniffable_devices := device_format.Split(string(out), -1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, device := range sniffable_devices {
+	for id, device := range sniffable_devices {
+		if device == "" {
+			continue
+		}
 		var dev Dev
+		dev.DeviceID = id
 		dev.Common_Name = device
 		dev.Name = string(interface_patt.Find([]byte(device)))
 		devInfo = append(devInfo, dev)
-	}
 
+	}
 	return devInfo
 }
 
 func (device Dev) Sniff() {
-	sniff_command := exec.Command("sudo", "tshark", "-iwlo1", "-aduration:100")
+	sniff_command := exec.Command("sudo", "tshark", "-I", "-i", device.Name, "-a", "duration:100")
+
+	// Deal with output stream
+	stdout, err := sniff_command.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stderr, err := sniff_command.StderrPipe()
+	if err != nil {
+		log.Fatal()
+	}
+
+	sniff_command.Start()
+	go handle_stream(stderr)
+	go handle_stream(stdout)
+	fmt.Scanln()
+}
+
+func Sniff(interf string) {
+	sniff_command := exec.Command("sudo", "tshark", "-I", "-i", interf, "-a", "duration:100")
 
 	// Deal with output stream
 	stdout, err := sniff_command.StdoutPipe()
