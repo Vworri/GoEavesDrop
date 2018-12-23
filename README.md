@@ -14,21 +14,21 @@ Govesdrop, sniffs the network, extracts text and other useful information.
    The user interface, at this point only allows the user (let's call him Dave) to chose with device he want't to sniff on.
    I mean to add some nore functionality:
  
-  -[ ] Dave can choose which device to sniff on
+  - [ ] Dave can choose which device to sniff on
   
-  -[ ] Dave can choose what type of payload he wants to consider.
+  - [ ] Dave can choose what type of payload he wants to consider.
   
   -[ ] Dave can go in and see how much data leakage is happening. How many packets have plain text in them and a list of  sources.
        
-  -[ ] Dave can see how many total packets are passing through
+  - [ ] Dave can see how many total packets are passing through
   
-  -[ ] Dave can choose where the payload is being stored on his system
+  - [ ] Dave can choose where the payload is being stored on his system
   
-  -[ ] Dave can kill the sniff
+  - [ ] Dave can kill the sniff
   
-  -[ ] Dave can schedule a sniff 
+  - [ ] Dave can schedule a sniff 
   
-  -[ ] Dave can count/ see a graph of malformed packets to see if Hal is misbehaving
+  - [ ] Dave can count/ see a graph of malformed packets to see if Hal is misbehaving
   
 
 ## Packaging Eavesdrop:
