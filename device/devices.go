@@ -10,7 +10,7 @@ import (
 
 type Dev struct {
 	DeviceID         int
-	Common_Name      string
+	CommonName       string
 	Name             string
 	Description      string
 	Addresses        []Address
@@ -40,7 +40,7 @@ func GetNetworkDeviceInfo() []Dev {
 		}
 		var dev Dev
 		dev.DeviceID = id
-		dev.Common_Name = device
+		dev.CommonName = device
 		dev.Name = string(interface_patt.Find([]byte(device)))
 		devInfo = append(devInfo, dev)
 
