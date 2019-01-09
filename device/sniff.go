@@ -15,7 +15,7 @@ import (
 type SniffProcess struct {
 	name          string
 	Process       *os.Process
-	Start_Time    time.Time
+	StartTime     time.Time
 	End_Time      time.Time
 	FilePath      string
 	Duration      int
@@ -29,7 +29,7 @@ type SniffProcess struct {
 	Queue         []*packet.Packet
 }
 
-func (device Dev) Sniff() {
+func (device *Dev) Sniff() {
 	var sniff SniffProcess
 	sniff.Command = exec.Command("sudo", "tshark", "-l", "-p", "-V", "-a", "duration:20", "-S", "\"===== THIS IS THE END ===\"")
 
@@ -47,11 +47,11 @@ func (device Dev) Sniff() {
 	return
 }
 
-func (sniff SniffProcess) StopSniff() {
+func (sniff *SniffProcess) StopSniff() {
 	sniff.Process.Kill()
 }
 
-func (sniff SniffProcess) handle_stream() {
+func (sniff *SniffProcess) handleStream() {
 	b := make([]byte, 48)
 	var current_packet string
 	for {
@@ -76,4 +76,12 @@ func (sniff SniffProcess) handle_stream() {
 			break
 		}
 	}
+}
+
+func (sniff *SniffProcess) Start() {
+	go sniff.Command.Start()
+	sniff.Command.Wait()
+	go sniff.handleStream()
+	fmt.Scanln()
+
 }
