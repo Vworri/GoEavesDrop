@@ -7,18 +7,18 @@ import (
 )
 
 type tcp struct {
-	Bytes_on_wire    int
-	Source_ip        int
-	SourcePort       int
-	DestinationPort  int
-	content_type     string
-	delta_tcp_stream float64
-	delta_tcp_packet float64
-	payload          string
+	bytesOnWire     int
+	SourceIp        int
+	SourcePort      int
+	DestinationPort int
+	contentType     string
+	deltaTcpStream  float64
+	deltaTCPPacket  float64
+	payload         string
 }
 
-func bytes_on_wire(tokens []string) (int, error) {
-	bytes_on_wire_err := errors.New("No value for bytes_on_wire found")
+func bytesOnWire(tokens []string) (int, error) {
+	bytesOnWireErr := errors.New("No value for bytes_on_wire found")
 	for i, token := range tokens {
 		if val, err := strconv.Atoi(token); err == nil {
 			if tokens[i+1] == "bytes" && tokens[i+2] == "on" && tokens[i+3] == "wire" {
@@ -28,12 +28,12 @@ func bytes_on_wire(tokens []string) (int, error) {
 		}
 
 	}
-	return 0, bytes_on_wire_err
+	return 0, bytesOnWireErr
 
 }
 
-func source_port(tokens []string) (int, error) {
-	source_port_err := errors.New("No value for source_port found")
+func sourcePort(tokens []string) (int, error) {
+	sourcePortErr := errors.New("No value for source_port found")
 	for i, token := range tokens {
 		if val, err := strconv.Atoi(token); err == nil {
 			if tokens[i-1] == "Port:" && tokens[i-2] == "Source" {
@@ -43,11 +43,11 @@ func source_port(tokens []string) (int, error) {
 		}
 
 	}
-	return 0, source_port_err
+	return 0, sourcePortErr
 
 }
-func destination_port(tokens []string) (int, error) {
-	destination_port_err := errors.New("No value for destination port found")
+func destinationPort(tokens []string) (int, error) {
+	destinationPortErr := errors.New("No value for destination port found")
 	for i, token := range tokens {
 		if val, err := strconv.Atoi(token); err == nil {
 			if tokens[i-1] == "Port:" && tokens[i-2] == "Destination" {
@@ -57,44 +57,44 @@ func destination_port(tokens []string) (int, error) {
 		}
 
 	}
-	return 0, destination_port_err
+	return 0, destinationPortErr
 
 }
 
 func content_type(tokens []string) (string, error) {
-	content_type_err := errors.New("No value for content type found")
-	begining_idx := -1
+	contentTypeErr := errors.New("No value for content type found")
+	beginingIdx := -1
 	for i, token := range tokens {
 		if tokens[i-1] == "Type:" && tokens[i-2] == "Content" {
-			begining_idx = i
+			beginingIdx = i
 		}
-		if begining_idx != -1 && strings.Index(token, ":") != -1 {
-			return strings.Join(tokens[begining_idx:i], " "), nil
+		if beginingIdx != -1 && strings.Index(token, ":") != -1 {
+			return strings.Join(tokens[beginingIdx:i], " "), nil
 		}
 
 	}
-	return "", content_type_err
+	return "", contentTypeErr
 
 }
 
-func delta_tcp_stream(tokens []string) (float64, error) {
-	delta_tcp_stream_err := errors.New("No value for time from TCP stream start found")
+func deltaTCPStream(tokens []string) (float64, error) {
+	deltaTCPStreamErr := errors.New("No value for time from TCP stream start found")
 	for i, token := range tokens {
 		if tokens[i-1] == "stream:" && tokens[i-2] == "TCP" && tokens[i-3] == "this" && tokens[i-4] == "in" && tokens[i-5] == "frame" && tokens[i-6] == "first" {
 			return strconv.ParseFloat(token, 64)
 		}
 
 	}
-	return -1.0, delta_tcp_stream_err
+	return -1.0, deltaTCPStreamErr
 }
 
-func delta_tcp_packet(tokens []string) (float64, error) {
-	delta_tcp_packet_err := errors.New("No value for time from TCP stream last packet found")
+func deltaTCPPacket(tokens []string) (float64, error) {
+	deltaTCPPacketErr := errors.New("No value for time from TCP stream last packet found")
 	for i, token := range tokens {
 		if tokens[i-1] == "stream:" && tokens[i-2] == "TCP" && tokens[i-3] == "this" && tokens[i-4] == "in" && tokens[i-5] == "previous" {
 			return strconv.ParseFloat(token, 64)
 		}
 
 	}
-	return -1.0, delta_tcp_packet_err
+	return -1.0, deltaTCPPacketErr
 }
