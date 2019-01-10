@@ -1,6 +1,6 @@
 package packet
 
-type Packet struct {
+type packet struct {
 	Pac       string
 	Complete  bool
 	Processed bool

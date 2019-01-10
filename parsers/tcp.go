@@ -8,11 +8,12 @@ import (
 
 type tcp struct {
 	bytesOnWire     int
-	SourceIp        int
+	SourceIP      string
 	SourcePort      int
+	DestinationIP 	string
 	DestinationPort int
 	contentType     string
-	deltaTcpStream  float64
+	deltaTCPStream  float64
 	deltaTCPPacket  float64
 	payload         string
 }

@@ -9,6 +9,7 @@ import (
 )
 
 type Dev struct {
+	// houses all device information
 	DeviceID         int
 	CommonName       string
 	Name             string
@@ -20,28 +21,30 @@ type Dev struct {
 	DeviceSniffs     []SniffProcess
 }
 type Address struct {
+	// Used to house addresses of devices
 	IP     net.IP
 	Subnet net.IPMask
 }
 
 func GetNetworkDeviceInfo() []Dev {
+	// uses t-hark to find sniff-able devices
 	var devInfo []Dev
-	var device_format = regexp.MustCompile(`(\d+.\s)`)
-	var interface_patt = regexp.MustCompile(`(?:\w+)`)
+	var deviceFormat = regexp.MustCompile(`(\d+.\s)`)
+	var interfacePatt = regexp.MustCompile(`(?:\w+)`)
 	out, err := exec.Command("tshark", "-D").Output()
 
-	sniffable_devices := device_format.Split(string(out), -1)
+	sniffableDevices := deviceFormat.Split(string(out), -1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for id, device := range sniffable_devices {
+	for id, device := range sniffableDevices {
 		if device == "" {
 			continue
 		}
 		var dev Dev
 		dev.DeviceID = id
 		dev.CommonName = device
-		dev.Name = string(interface_patt.Find([]byte(device)))
+		dev.Name = string(interfacePatt.Find([]byte(device)))
 		devInfo = append(devInfo, dev)
 
 	}

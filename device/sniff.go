@@ -13,10 +13,11 @@ import (
 )
 
 type SniffProcess struct {
+	//process information for sniff commands
 	name          string
 	Process       *os.Process
 	StartTime     time.Time
-	End_Time      time.Time
+	EndTime       time.Time
 	FilePath      string
 	Duration      int
 	ContentType   []string
@@ -53,23 +54,23 @@ func (sniff *SniffProcess) StopSniff() {
 
 func (sniff *SniffProcess) handleStream() {
 	b := make([]byte, 48)
-	var current_packet string
+	var currentPacket string
 	for {
 		n, err := sniff.OutputStream.Read(b)
 		line := fmt.Sprintf("%s", b[:n])
 
 		if strings.Contains(line, "\"===== THIS IS THE END ===\"") == true {
 			pac := new(packet.Packet)
-			bfore_after := strings.Split(line, "\"===== THIS IS THE END ===\"")
-			current_packet += bfore_after[0]
-			pac.Pac = current_packet
+			bforeAfter := strings.Split(line, "\"===== THIS IS THE END ===\"")
+			currentPacket += bforeAfter[0]
+			pac.Pac = currentPacket
 			pac.Processed = false
 			pac.Complete = true
 			sniff.Queue = append(sniff.Queue, pac)
 			fmt.Println(len(sniff.Queue))
-			current_packet = bfore_after[1]
+			currentPacket = bforeAfter[1]
 		} else {
-			current_packet += line
+			currentPacket += line
 		}
 
 		if err == io.EOF {
@@ -79,6 +80,7 @@ func (sniff *SniffProcess) handleStream() {
 }
 
 func (sniff *SniffProcess) Start() {
+	// Start go routines for the sniff
 	go sniff.Command.Start()
 	sniff.Command.Wait()
 	go sniff.handleStream()
