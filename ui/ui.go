@@ -7,17 +7,21 @@ import (
 
 type App struct {
 	*tview.Application
-	AvailableDevices []device.Dev
+	AvailableDevices  []device.Dev
+	currentDevicePage *tview.Flex
+	currentMenu       menu
 }
 
 func CreateApplicaion() App {
-	app := tview.NewApplication()
+	app := App{
+		Application:      tview.NewApplication(),
+		AvailableDevices: device.GetNetworkDeviceInfo()}
 
-	return App{Application: app}
+	return app
 
 }
 func newTextPrimitive(text string) *tview.TextView {
 	return tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).
-		SetText(text)
+		SetText(text).SetWrap(true)
 }

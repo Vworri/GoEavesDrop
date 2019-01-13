@@ -28,6 +28,7 @@ type Address struct {
 
 type SniffProcess struct {
 	PID           int
+	Name          string
 	StartTime     time.Time
 	EndTime       time.Time
 	FilePath      string
@@ -56,6 +57,8 @@ func GetNetworkDeviceInfo() []Dev {
 		dev.DeviceID = id
 		dev.CommonName = device
 		dev.Name = string(interface_patt.Find([]byte(device)))
+		dev.DeviceSniffs = append(dev.DeviceSniffs,
+			SniffProcess{Name: fmt.Sprintf("Sniff # %s", device)})
 		devInfo = append(devInfo, dev)
 
 	}
