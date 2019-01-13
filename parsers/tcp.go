@@ -8,9 +8,9 @@ import (
 
 type tcp struct {
 	bytesOnWire     int
-	SourceIP      string
+	SourceIP        string
 	SourcePort      int
-	DestinationIP 	string
+	DestinationIP   string
 	DestinationPort int
 	contentType     string
 	deltaTCPStream  float64
@@ -62,7 +62,7 @@ func destinationPort(tokens []string) (int, error) {
 
 }
 
-func content_type(tokens []string) (string, error) {
+func contentType(tokens []string) (string, error) {
 	contentTypeErr := errors.New("No value for content type found")
 	beginingIdx := -1
 	for i, token := range tokens {

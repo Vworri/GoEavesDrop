@@ -1,7 +1,6 @@
 package device
 
 import (
-	"log"
 	"net"
 	"os/exec"
 	"regexp"
@@ -26,17 +25,16 @@ type Address struct {
 	Subnet net.IPMask
 }
 
-func GetNetworkDeviceInfo() []Dev {
+func GetNetworkDeviceInfo() ([]Dev, error) {
 	// uses t-hark to find sniff-able devices
 	var devInfo []Dev
 	var deviceFormat = regexp.MustCompile(`(\d+.\s)`)
 	var interfacePatt = regexp.MustCompile(`(?:\w+)`)
 	out, err := exec.Command("tshark", "-D").Output()
-
-	sniffableDevices := deviceFormat.Split(string(out), -1)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+	sniffableDevices := deviceFormat.Split(string(out), -1)
 	for id, device := range sniffableDevices {
 		if device == "" {
 			continue
@@ -48,5 +46,5 @@ func GetNetworkDeviceInfo() []Dev {
 		devInfo = append(devInfo, dev)
 
 	}
-	return devInfo
+	return devInfo, err
 }

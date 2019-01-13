@@ -9,10 +9,10 @@ import (
 
 func main() {
 
-	available_devices := device.GetNetworkDeviceInfo()
+	availableDevices, _ := device.GetNetworkDeviceInfo()
 	l := tui.NewList()
 	l.SetFocused(true)
-	for _, interf := range available_devices {
+	for _, interf := range availableDevices {
 		l.AddItems(interf.CommonName)
 	}
 	l.SetSelected(0)
@@ -28,8 +28,8 @@ func main() {
 	ui.SetKeybinding("p", func() {
 		ui.Quit()
 		selcted := l.Selected()
-		available_devices[selcted].Sniff()
-		available_devices[selcted].DeviceSniffs[0].Start() //assuming only one sniff for now
+		availableDevices[selcted].Sniff()
+		availableDevices[selcted].DeviceSniffs[0].Start() //assuming only one sniff for now
 
 	})
 

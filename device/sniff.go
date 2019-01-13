@@ -30,7 +30,9 @@ type SniffProcess struct {
 	Queue         []*packet.Packet
 }
 
-func (device *Dev) Sniff() {
+func (device *Dev) Sniff() error {
+	///dynamically creates a tshark sniff process
+	// this is the core of Eavesdrop
 	var sniff SniffProcess
 	sniff.Command = exec.Command("sudo", "tshark", "-l", "-p", "-V", "-a", "duration:20", "-S", "\"===== THIS IS THE END ===\"")
 
@@ -38,17 +40,18 @@ func (device *Dev) Sniff() {
 	var err error
 	sniff.OutputStream, err = sniff.Command.StdoutPipe()
 	if err != nil {
-		log.Fatal("Cannot pipe standard output of sniff")
+		return err
 	}
 	sniff.ErrorStream, err = sniff.Command.StderrPipe()
 	if err != nil {
 		log.Fatal("Cannot pipe standard error of sniff")
 	}
 	device.DeviceSniffs = append(device.DeviceSniffs, sniff)
-	return
+	return nil
 }
 
 func (sniff *SniffProcess) StopSniff() {
+	// Kills the sniff command
 	sniff.Process.Kill()
 }
 
