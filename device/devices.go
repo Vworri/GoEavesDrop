@@ -26,7 +26,7 @@ type Address struct {
 }
 
 func GetNetworkDeviceInfo() ([]Dev, error) {
-	// uses t-hark to find sniff-able devices
+	// Uses t-hark to find sniff-able devices
 	var devInfo []Dev
 	var deviceFormat = regexp.MustCompile(`(\d+.\s)`)
 	var interfacePatt = regexp.MustCompile(`(?:\w+)`)
