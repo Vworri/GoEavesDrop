@@ -15,7 +15,7 @@ type Dev struct {
 	Description      string
 	Addresses        []Address
 	TimeRegistered   time.Time
-	TimeDeregistered time.Time
+	TimeDeregistered time.Time 
 	PacketCount      int
 	DeviceSniffs     []SniffProcess
 }
