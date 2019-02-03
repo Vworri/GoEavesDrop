@@ -12,33 +12,33 @@ type deviceDetails struct {
 	Info   *tview.Form
 }
 
-func (men *menu) buildDeviceDetails() {
+func (app *App) buildDeviceDetails() {
 	// returns the device details when a device is selected from the
 	//menu packaged and formatted
-	men.generateNavBar()
+	app.generateNavBar()
 
 	page := tview.NewGrid().
 		SetRows(3, -1).
 		SetColumns(0, 0).SetBorders(true)
-	page.AddItem(men.details.navBar, 0, 0, 1, 3, 0, 0, true).AddItem(men.details.Info, 1, 0, 1, 3, 0, 0, true)
-	men.currentPage = page
+	page.AddItem(app.currentMenu.details.navBar, 0, 0, 1, 3, 0, 0, true).AddItem(app.currentMenu.details.Info, 1, 0, 1, 3, 0, 0, true)
+	app.currentMenu.currentPage = page
 }
 
-func (men *menu) generateNavBar() {
+func (app *App) generateNavBar() {
 	//Builds the navigation bar and the device information page
 	devDash := deviceDetails{navBar: tview.NewTable(),
-		Info: men.generateDeviceInfoPage()}
+		Info: app.generateDeviceInfoPage()}
 
 	devDash.navBar.SetBorders(true)
 
-	devDash.navBar.SetCellSimple(0, 0, fmt.Sprintf("%s Info", men.SelectedDevice.Name))
+	devDash.navBar.SetCellSimple(0, 0, fmt.Sprintf("%s Info", app.currentMenu.SelectedDevice.Name))
 
-	for idx, sniff := range men.SelectedDevice.DeviceSniffs {
+	for idx, sniff := range app.currentMenu.SelectedDevice.DeviceSniffs {
 		devDash.navBar.SetCellSimple(0, idx+1, sniff.Name)
 
 	}
 
-	men.details = devDash
+	app.currentMenu.details = devDash
 }
 
 func (app *App) handleNavbar() {
@@ -57,7 +57,7 @@ func (app *App) handleNavbar() {
 	})
 }
 
-func (men menu) generateDeviceInfoPage() *tview.Form {
+func (app *App) generateDeviceInfoPage() *tview.Form {
 
 	form := tview.NewForm().
 		AddDropDown("Title", []string{"Mr.", "Ms.", "Mrs.", "Dr.", "Prof."}, 0, nil).
@@ -65,12 +65,27 @@ func (men menu) generateDeviceInfoPage() *tview.Form {
 		AddInputField("Last name", "", 20, nil, nil).
 		AddCheckbox("Age 18+", false, nil).
 		AddPasswordField("Password", "", 10, '*', nil).
-		AddButton("Save", nil).
+		AddButton("Save", func() {
+			app.switchToNavBar()
+		}).
 		AddButton("Quit", nil)
 	form.SetBorder(true).SetTitle("Enter some data").SetTitleAlign(tview.AlignLeft)
 
 	return form
 
+}
+
+func (app *App) handleDeviceInfoPage() {
+	// handles navbar navigation
+	app.currentMenu.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyEscape {
+			app.switchToNavBar()
+		}
+
+		if key == tcell.KeyTab {
+			fmt.Println("Hello worj")
+		}
+	})
 }
 
 func (app *App) handleNavBarSelect() {

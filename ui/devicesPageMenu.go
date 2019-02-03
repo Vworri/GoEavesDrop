@@ -44,7 +44,7 @@ func (app *App) reInitializeDevicePage(row int) {
 	app.currentDevicePage.RemoveItem(app.currentMenu.currentPage)
 	app.currentMenu.SelectedName = app.selectMenu(&app.currentMenu, row)
 	app.currentMenu.SelectedDevice = app.retireveDevice(&app.currentMenu.SelectedName)
-	app.currentMenu.buildDeviceDetails()
+	app.buildDeviceDetails()
 	app.currentDevicePage.AddItem(app.currentMenu.currentPage, 0, 1, true)
 }
 
@@ -55,7 +55,7 @@ func (app *App) createMenu() {
 	// input hanldlers are housed in the handler function
 	app.currentMenu.Table = tview.NewTable()
 	app.currentMenu.SelectedDevice = app.getInitialDevice()
-	app.currentMenu.buildDeviceDetails()
+	app.buildDeviceDetails()
 	app.currentMenu.Table.SetBorders(true)
 	for idx, dev := range app.AvailableDevices {
 		app.currentMenu.SetCell(idx, 0, tview.NewTableCell(dev.CommonName).
