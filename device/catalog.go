@@ -2,7 +2,6 @@ package device
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os/exec"
@@ -26,93 +25,28 @@ type Address struct {
 	Subnet net.IPMask
 }
 
-type SniffProcess struct {
-	PID           int
-	Name          string
-	StartTime     time.Time
-	EndTime       time.Time
-	FilePath      string
-	Duration      int
-	ContentType   []string
-	IsPromiscuous bool
-	Save          bool
-	SaveLocation  string
-}
-
 func GetNetworkDeviceInfo() []Dev {
 	var devInfo []Dev
-	var device_format = regexp.MustCompile(`(\d+.\s)`)
-	var interface_patt = regexp.MustCompile(`(?:\w+)`)
+	var deviceFormat = regexp.MustCompile(`(\d+.\s)`)
+	var interfacePatt = regexp.MustCompile(`(?:\w+)`)
 	out, err := exec.Command("tshark", "-D").Output()
 
-	sniffable_devices := device_format.Split(string(out), -1)
+	sniffableDevices := deviceFormat.Split(string(out), -1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for id, device := range sniffable_devices {
+	for id, device := range sniffableDevices {
 		if device == "" {
 			continue
 		}
 		var dev Dev
 		dev.DeviceID = id
 		dev.CommonName = device
-		dev.Name = string(interface_patt.Find([]byte(device)))
+		dev.Name = string(interfacePatt.Find([]byte(device)))
 		dev.DeviceSniffs = append(dev.DeviceSniffs,
 			SniffProcess{Name: fmt.Sprintf("Sniff # %s", device)})
 		devInfo = append(devInfo, dev)
 
 	}
 	return devInfo
-}
-
-func (device Dev) Sniff() {
-	sniff_command := exec.Command("sudo", "tshark", "-I", "-i", device.Name, "-a", "duration:100")
-
-	// Deal with output stream
-	stdout, err := sniff_command.StdoutPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stderr, err := sniff_command.StderrPipe()
-	if err != nil {
-		log.Fatal()
-	}
-
-	sniff_command.Start()
-	go handle_stream(stderr)
-	go handle_stream(stdout)
-	fmt.Scanln()
-}
-
-func Sniff(interf string) {
-	sniff_command := exec.Command("sudo", "tshark", "-I", "-i", interf, "-a", "duration:100")
-
-	// Deal with output stream
-	stdout, err := sniff_command.StdoutPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stderr, err := sniff_command.StderrPipe()
-	if err != nil {
-		log.Fatal()
-	}
-
-	sniff_command.Start()
-	go handle_stream(stderr)
-	go handle_stream(stdout)
-	fmt.Scanln()
-}
-
-func handle_stream(std io.ReadCloser) {
-	b := make([]byte, 1)
-	for {
-		n, err := std.Read(b)
-		fmt.Printf("%s", b[:n])
-
-		if err == io.EOF {
-			break
-		}
-	}
 }
