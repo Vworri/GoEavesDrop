@@ -57,6 +57,7 @@ func (sniff *SniffProcess) StopSniff() {
 
 func (sniff *SniffProcess) handleStream() {
 	b := make([]byte, 48)
+	fmt.Println("Hello world!")
 	var currentPacket string
 	for {
 		n, err := sniff.OutputStream.Read(b)
