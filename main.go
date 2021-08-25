@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Vworri/GoEavesDrop/ui"
+	"github.com/vworri/GoEavesDrop/ui"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/Vworri/GoEavesDrop/device"
+	"github.com/vworri/GoEavesDrop/device"
 	"github.com/rivo/tview"
 )
 
